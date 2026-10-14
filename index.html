@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#111c25">
+  <title>IncluLearn AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="noise"></div>
+  <div id="appSession" data-user-name="{{ current_user.name if current_user else '' }}" data-user-email="{{ current_user.email if current_user else '' }}"></div>
+  <div class="shell hidden" id="appShell">
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-symbol"><span></span><span></span><span></span></div>
+        <div><b>IncluLearn AI</b><small data-i18n="inclusiveLearning">Inclusive learning</small></div>
+      </div>
+      <div class="ai-profile"><div class="avatar">✦</div><div><strong>Ayla AI</strong><small data-i18n="learningAssistant">Оқу көмекшісі</small></div><i class="online"></i></div>
+      <nav>
+        <button class="nav-link active" data-view="dashboard"><span>⌂</span> <span data-i18n="workspace">Жұмыс кеңістігі</span></button>
+        <button class="nav-link" data-view="materials"><span>▱</span> <span data-i18n="materials">Материалдар</span></button>
+        <button class="nav-link" data-view="tasks"><span>✓</span> <span>Тапсырмалар құру</span></button>
+        <button class="nav-link" data-view="about"><span>✧</span> <span data-i18n="aboutAyla">Ayla AI туралы</span></button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="secure"><span>✓</span><div><b data-i18n="privateSafe">Жеке әрі қауіпсіз</b><small data-i18n="dataInYourDatabase">Деректер сіздің базаңызда</small></div></div>
+        <small data-i18n="copyright">IncluLearn AI © 2026</small>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="mobile-logo"><b>IncluLearn AI</b></div>
+        <div class="top-actions">
+          <span id="dbStatus" class="db-status"><i></i> <span data-i18n="databaseConnected">Деректер базасы қосулы</span></span>
+          <div class="accessibility-tools" aria-label="Қолжетімділік құралдары">
+            <button id="fontDown" title="Қаріпті кішірейту">A−</button>
+            <button id="fontReset" title="Қалыпты қаріп">A</button>
+            <button id="fontUp" title="Қаріпті үлкейту">A+</button>
+            <button id="contrastButton" title="Жоғары контраст">◐</button>
+            <button id="themeButton" title="Қараңғы режим">☾</button>
+          </div>
+          <select id="language" aria-label="Тіл">
+            <option value="kk">Қазақша</option><option value="ru">Русский</option><option value="en">English</option>
+          </select>
+          <span id="teacherName" class="teacher-name">Мұғалім</span><button id="logoutButton" class="profile-button" title="Шығу">↪</button>
+        </div>
+      </header>
+
+      <section id="dashboardView" class="view active">
+        <div class="hero">
+          <div><div class="kicker"><span></span> INCLULEARN AI · INCLUSIVE EDUCATION</div>
+            <h1>Әр оқушыға<br><em>өз жолы.</em></h1>
+            <p>Бір оқу материалын барлық оқушыға түсінікті, қолжетімді және қызықты форматтарға бейімдеңіз.</p>
+          </div>
+          <div class="hero-orb"><div class="orb-ring"></div><div class="orb-core">✦</div><span class="orb-label">Learn<br>together</span></div>
+        </div>
+
+        <div class="content-grid">
+          <section class="panel source-panel">
+            <div class="panel-top"><div><span class="step">01</span><h2 data-i18n="addMaterial">Материалды қосыңыз</h2><p data-i18n="supportedFiles">Мәтін, PDF, презентация немесе Word құжаты</p></div><div class="panel-icon">↗</div></div>
+            <div id="dropzone" class="dropzone">
+              <input id="fileInput" type="file" accept=".pdf,.docx,.pptx,.txt,.md,.csv,.html">
+              <div class="drop-icon">↑</div><b data-i18n="dropFile">Файлды осында сүйреңіз</b><span data-i18n="orChooseFile">немесе <u>файлды таңдаңыз</u></span><small data-i18n="fileLimit">PDF · DOCX · PPTX · TXT · 25 MB дейін</small>
+            </div>
+            <div id="fileNote" class="file-note hidden"></div>
+            <div class="or"><span data-i18n="orPasteText">немесе мәтінді қойыңыз</span></div>
+            <input id="materialTitle" class="title-input" data-i18n-placeholder="materialTitlePlaceholder" placeholder="Материал атауы (міндетті емес)" aria-label="Материал атауы">
+            <textarea id="sourceText" data-i18n-placeholder="sourcePlaceholder" placeholder="Оқу материалыңызды осында жазыңыз немесе қойыңыз..."></textarea>
+            <div class="source-bottom"><span id="charCount">0 таңба</span><button id="demoButton">Үлгі материалды жүктеу <span>→</span></button></div>
+          </section>
+
+          <section class="panel format-panel">
+            <div class="panel-top"><div><span class="step">02</span><h2 data-i18n="adaptForStudent">Оқушыға бейімдеңіз</h2><p data-i18n="chooseFormats">Бірнеше форматты қатар таңдауға болады</p></div><div class="selected-count"><b id="formatCount">7</b><small data-i18n="selected">таңдалды</small></div></div>
+            <div class="format-list">
+              <label class="format selected"><input type="checkbox" value="simplified" checked><span class="format-visual sky">Aa</span><span><b data-i18n="formatSimplified">Жеңілдетілген мәтін</b><small data-i18n="formatSimplifiedDesc">Қарапайым тіл мен қысқа сөйлемдер</small></span><i>✓</i></label>
+              <label class="format selected"><input type="checkbox" value="steps" checked><span class="format-visual amber">1·2·3</span><span><b data-i18n="formatSteps">Қадам-қадаммен түсіндіру</b><small data-i18n="formatStepsDesc">Ретімен берілген түсіндіру</small></span><i>✓</i></label>
+              <label class="format selected"><input type="checkbox" value="examples" checked><span class="format-visual lilac">✦</span><span><b data-i18n="formatExamples">Қосымша мысалдар</b><small data-i18n="formatExamplesDesc">Өмірмен және тәжірибемен байланысты</small></span><i>✓</i></label>
+              <label class="format selected"><input type="checkbox" value="diagram" checked><span class="format-visual mint">⌘</span><span><b data-i18n="formatDiagram">Визуалды сызба</b><small data-i18n="formatDiagramDesc">Негізгі ұғымдардың байланысы</small></span><i>✓</i></label>
+              <label class="format"><input type="checkbox" value="large"><span class="format-visual lime">A+</span><span><b data-i18n="formatLarge">Үлкейтілген қаріп</b><small data-i18n="formatLargeDesc">Көруге ыңғайлы нұсқа</small></span><i>✓</i></label>
+              <label class="format selected"><input type="checkbox" value="summary" checked><span class="format-visual yellow">≡</span><span><b data-i18n="formatSummary">Қысқаша резюме</b><small data-i18n="formatSummaryDesc">Ең маңызды ойлар ғана</small></span><i>✓</i></label>
+              <label class="format selected"><input type="checkbox" value="tasks" checked><span class="format-visual rose">✓</span><span><b data-i18n="formatTasks">Бейімделген тапсырмалар</b><small data-i18n="formatTasksDesc">Деңгейі реттелген тапсырмалар</small></span><i>✓</i></label>
+            </div>
+            <button id="adaptButton" class="main-button"><span>✦</span> Ayla AI арқылы бейімдеу <kbd>Ctrl ↵</kbd></button>
+          </section>
+        </div>
+
+        <section id="outputSection" class="output-section hidden">
+          <div class="output-heading"><div><div class="kicker"><span></span> AYLA AI · <span data-i18n="result">НӘТИЖЕ</span></div><h2 data-i18n="materialReady">Материал дайын</h2><p id="outputMeta"></p></div><div class="output-actions"><button id="printButton" data-i18n="print">⤓ Басып шығару</button><button id="copyButton" data-i18n="copyAll">▣ Барлығын көшіру</button></div></div>
+          <div id="progressBar" class="progress-card hidden"><div><b>Оқу прогресі</b><small id="progressText">0% аяқталды</small></div><div class="progress-track"><span id="progressFill"></span></div></div>
+          <div id="tabs" class="tabs"></div><div id="result" class="result"></div>
+          <div id="practiceCard" class="practice-card hidden"></div>
+          <div class="ask-card"><div class="ask-title"><div class="ask-avatar">✦</div><div><b data-i18n="askAyla">Ayla AI-ға сұрақ қойыңыз</b><small data-i18n="answerFromMaterial">Жауап жүктелген материалға сүйеніп беріледі</small></div></div><div class="ask-row"><input id="questionInput" data-i18n-placeholder="questionPlaceholder" placeholder="Мысалы: Бұл тақырыптың негізгі идеясы қандай?"><button id="askButton" data-i18n="getAnswer">Жауап алу <span>→</span></button></div><div id="answer" class="answer hidden"></div></div>
+        </section>
+      </section>
+
+      <section id="materialsView" class="view hidden">
+        <div class="section-title"><div class="kicker"><span></span> LIBRARY</div><h1 data-i18n="myMaterials">Материалдарым</h1><p data-i18n="libraryDescription">Материалдарды іздеп, ашып немесе қажет болмаса өшіріңіз.</p></div>
+        <div class="library-tools"><input id="searchMaterials" data-i18n-placeholder="searchPlaceholder" placeholder="Материал іздеу..."><button id="refreshMaterials" data-i18n="refresh">↻ Жаңарту</button></div>
+        <div id="materialsList" class="materials-list"></div>
+      </section>
+
+      <section id="tasksView" class="view hidden">
+        <div class="section-title"><div class="kicker"><span></span> TEACHER TOOLKIT</div><h1>AI арқылы тапсырмалар құру</h1><p>Мұғалім материалды файлмен жүктейді немесе мәтінді енгізеді. Ayla AI тапсырмаларды автоматты түрде құрастырады. Дайын жұмысты PDF ретінде сақтауға болады.</p></div>
+        <section class="panel task-form-panel ai-task-generator">
+          <div class="panel-top"><div><span class="step">01</span><h2>Материалды енгізіңіз</h2><p>PDF, Word, PowerPoint немесе жай мәтін</p></div></div>
+          <label class="field-label" for="aiTaskTitle">Жұмыс атауы</label><input id="aiTaskTitle" class="title-input" placeholder="Мысалы: Компьютерлік желілер">
+          <label class="field-label" for="aiTaskFile">Файл жүктеу</label><input id="aiTaskFile" type="file" accept=".pdf,.docx,.pptx,.txt,.md,.csv,.html" class="title-input">
+          <label class="field-label" for="aiTaskSource">Немесе материал мәтінін енгізіңіз</label><textarea id="aiTaskSource" rows="7" placeholder="Оқу материалының мәтінін осында көшіріңіз..."></textarea>
+          <div class="generator-options">
+            <div><label class="field-label" for="aiTaskType">Тапсырма түрлері</label><select id="aiTaskType" class="task-select"><option value="mixed">Аралас тапсырмалар</option><option value="quiz">Бір дұрыс жауапты тест</option><option value="multi">Бірнеше дұрыс жауап</option><option value="truefalse">Дұрыс / бұрыс</option><option value="matching">Сәйкестендіру</option><option value="scenario">Жағдаяттық тапсырмалар</option><option value="open">Ашық сұрақтар</option><option value="fill">Бос орынды толтыру</option><option value="order">Ретін анықтау</option></select></div>
+            <div><label class="field-label" for="aiTaskCount">Тапсырма саны</label><select id="aiTaskCount" class="task-select"><option>5</option><option selected>10</option><option>15</option><option>20</option></select></div>
+            <div><label class="field-label" for="aiTaskLevel">Деңгейі</label><select id="aiTaskLevel" class="task-select"><option value="easy">Жеңіл</option><option value="medium" selected>Орташа</option><option value="hard">Күрделі</option></select></div>
+          </div>
+          <button id="generateTaskSetButton" class="main-button">✦ Ayla AI тапсырмаларды құрсын</button>
+          <div id="aiTaskStatus" class="task-validation hidden" role="status"></div>
+        </section>
+        <section id="generatedTaskPanel" class="panel saved-tasks-panel hidden"><div class="panel-top"><div><span class="step">02</span><h2 id="generatedTaskHeading">Дайын тапсырмалар</h2><p id="generatedTaskMeta">Тапсырмаларды қарап шығыңыз</p></div></div><div id="generatedTaskList" class="generated-task-list"></div><div class="task-save-row"><button id="saveGeneratedTaskButton" class="main-button">Жұмысты сақтау</button><button id="downloadTaskPdfButton" class="secondary-button">PDF ретінде сақтау</button></div><div id="generatedSaveStatus" class="task-validation hidden"></div></section>
+        <section class="panel saved-tasks-panel"><div class="panel-top"><div><span class="step">03</span><h2>Сақталған жұмыстар</h2><p>Бұрын құрылған жұмыстарды қайта ашыңыз</p></div><button id="refreshTaskSets" class="secondary-button">Жаңарту</button></div><div id="savedTaskSets" class="saved-task-sets"></div></section>
+      </section>
+
+      <section id="aboutView" class="view hidden">
+        <div class="section-title"><div class="kicker"><span></span> ABOUT INCLULEARN AI</div><h1 data-i18n="aboutHeadline">Жұмысты жеңілдететін<br><em>ақылды көмекші.</em></h1><p data-i18n="aboutDescription">Ayla AI — әр оқушының оқу қарқыны мен қабылдау ерекшелігін ескеруге көмектесетін IncluLearn AI ассистенті.</p></div>
+        <div class="about-grid"><article><span>01</span><h3 data-i18n="understandsContent">Мазмұнды түсінеді</h3><p data-i18n="understandsContentDesc">Мәтіндегі негізгі ұғымдарды, байланыстарды және маңызды сөйлемдерді талдайды.</p></article><article><span>02</span><h3 data-i18n="changesFormat">Форматты өзгертеді</h3><p data-i18n="changesFormatDesc">Бір материалды бірнеше оқу форматына айналдырады.</p></article><article><span>03</span><h3 data-i18n="createsDialogue">Диалог құрады</h3><p data-i18n="createsDialogueDesc">Оқушының сұрағына берілген материалға сүйеніп, түсінікті жауап береді.</p></article></div>
+        <div class="about-note"><b data-i18n="newFeatures">Жаңа мүмкіндіктер</b><p data-i18n="newFeaturesDesc">Қаріп өлшемін басқару · Жоғары контраст · Қараңғы режим · Интерактивті тапсырмалар · Прогресс сақтау · Материал іздеу және жою.</p></div>
+      </section>
+      <footer><span>IncluLearn AI · Ayla AI</span><span data-i18n="inclusiveForEveryone">Inclusive education for everyone</span></footer>
+    </main>
+  </div>
+  <section id="authGate" class="auth-gate">
+    <div class="auth-card">
+      <div class="auth-brand"><div class="logo-symbol"><span></span><span></span><span></span></div><div><b>IncluLearn AI</b><small>Мұғалімдерге арналған тапсырма құрастыру</small></div></div>
+      <div class="auth-tabs"><button class="auth-tab active" data-auth-tab="login">Кіру</button><button class="auth-tab" data-auth-tab="register">Тіркелу</button></div>
+      <h1 id="authTitle">Қош келдіңіз!</h1><p id="authSubtitle">Мұғалім аккаунтыңызға кіріңіз.</p>
+      <form id="authForm">
+        <div id="authNameWrap" class="hidden"><label class="field-label" for="authName">Аты-жөніңіз</label><input id="authName" class="title-input" autocomplete="name" placeholder="Аты-жөні"></div>
+        <label class="field-label" for="authEmail">Электрондық пошта</label><input id="authEmail" class="title-input" type="email" autocomplete="email" required placeholder="name@example.com">
+        <label class="field-label" for="authPassword">Құпиясөз</label><input id="authPassword" class="title-input" type="password" autocomplete="current-password" minlength="8" required placeholder="Кемінде 8 таңба">
+        <button id="authSubmit" class="main-button" type="submit">Кіру</button>
+      </form>
+      <div id="authError" class="auth-error hidden" role="alert"></div>
+    </div>
+  </section>
+  
+  <div id="toast" class="toast" role="status"></div>
+  <script src="{{ url_for('static', filename='i18n.js') }}"></script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
